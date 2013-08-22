@@ -5,6 +5,7 @@
 
 package org.bsc.processor;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -64,7 +65,7 @@ public abstract class BaseAbstractProcessor extends AbstractProcessor {
      */
     protected FileObject getResourceFormClassPath(
             final String resource, 
-            final String packageName ) throws IOException 
+            final String packageName ) throws FileNotFoundException,IOException 
     {
         final Filer filer = processingEnv.getFiler();
         
