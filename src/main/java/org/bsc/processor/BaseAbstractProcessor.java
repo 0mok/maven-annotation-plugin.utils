@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.bsc.jaxrs;
+package org.bsc.processor;
 
 import java.io.IOException;
 
@@ -93,7 +93,7 @@ public abstract class BaseAbstractProcessor extends AbstractProcessor {
      * @return
      * @throws IOException 
      */
-    protected FileObject getOutputFile( 
+    protected FileObject createSourceOutputFile( 
                 String subfolder, 
                 String filePath ) throws IOException 
     {
