@@ -19,6 +19,9 @@ import javax.tools.StandardLocation;
 
 
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.tools.JavaFileManager;
 
 
 /**
@@ -55,22 +58,78 @@ public abstract class BaseAbstractProcessor extends AbstractProcessor {
         processingEnv.getMessager().printMessage(Kind.ERROR, msg );
         t.printStackTrace(System.err);
     }
+    
+    final Pattern p = Pattern.compile("(.*)[\\.]((?:\\w+)\\.gwt\\.xml)");
 
     /**
      * 
-     * @param resource
-     * @param packageName
-     * @return
-     * @throws IOException 
+     * @param fqn
+     * @return 
      */
-    protected FileObject getResourceFormClassPath(
-            final String resource, 
-            final String packageName ) throws FileNotFoundException,IOException 
+    protected java.net.URL getResourceFromClassPath( String fqn )
     {
+        return getResourceFromClassPath(fqn, getClass().getClassLoader());
+    }
+            
+    /**
+     * 
+     * @param fqn
+     * @param cl
+     * @return 
+     */
+    protected java.net.URL getResourceFromClassPath( String fqn, ClassLoader cl )
+    {
+        if( fqn == null ) {
+            throw new IllegalArgumentException( "fqn is null!");
+        }
+        if( cl == null ) {
+            throw new IllegalArgumentException( "class loader is null!");
+        }
+        
+        Matcher m = p.matcher(fqn);
+        
+        if( !m.matches() ) {
+        	throw new IllegalArgumentException(String.format("parameter '%s' doesn't contain a valid fqn", fqn));
+        }
+          
+        final String packageName = m.group(1);
+        final String resource = m.group(2);
+
+        warn( String.format("packageName=[%s]\nresource=[%s]\n", packageName, resource));
+
+        //FileObject moduleObject = getResourceFormSourcePath(resource, packageName);
+        final String res = packageName.replace('.', '/').concat("/").concat(resource);
+        java.net.URL url = cl.getResource( res  );
+
+        return url;
+			
+
+    }
+ 
+    /**
+     * 
+     * @param location
+     * @return 
+     */
+    protected FileObject getResourceFormLocation(
+            final JavaFileManager.Location location,
+            final String packageName,
+            final String resource ) throws FileNotFoundException,IOException 
+    {
+        if( location == null ) {
+            throw new IllegalArgumentException( "location is null!");
+        }
+        if( packageName == null ) {
+            throw new IllegalArgumentException( "packageName loader is null!");
+        }
+        if( resource == null ) {
+            throw new IllegalArgumentException( "resource loader is null!");
+        }
+        
         final Filer filer = processingEnv.getFiler();
         
         FileObject f = filer.getResource(
-                            StandardLocation.CLASS_PATH, 
+                            location, 
                             packageName, 
                             resource);
 
