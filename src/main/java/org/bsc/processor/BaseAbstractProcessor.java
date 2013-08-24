@@ -95,11 +95,17 @@ public abstract class BaseAbstractProcessor extends AbstractProcessor {
         final String packageName = m.group(1);
         final String resource = m.group(2);
 
-        warn( String.format("packageName=[%s]\nresource=[%s]\n", packageName, resource));
+        info( String.format("packageName=[%s]\nresource=[%s]\n", packageName, resource));
 
-        //FileObject moduleObject = getResourceFormSourcePath(resource, packageName);
-        final String res = packageName.replace('.', '/').concat("/").concat(resource);
-        java.net.URL url = cl.getResource( res  );
+        final String res;
+        if( packageName==null || packageName.isEmpty() ) {
+            res = resource;
+        }
+        else {
+            res = packageName.replace('.', '/').concat("/").concat(resource);        
+        }
+        
+        final java.net.URL url = cl.getResource( res  );
 
         return url;
 			
