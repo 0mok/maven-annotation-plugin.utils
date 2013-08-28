@@ -21,6 +21,7 @@ import javax.tools.StandardLocation;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.processing.RoundEnvironment;
 import javax.tools.JavaFileManager;
 
 
@@ -112,6 +113,46 @@ public abstract class BaseAbstractProcessor extends AbstractProcessor {
 
     }
  
+    /**
+     * 
+     */
+    public static interface Predicate {
+        
+        /**
+         * 
+         * @param source
+         * @param elements
+         * @return 
+         */
+        boolean execute( TypeElement source, java.util.Set<? extends Element> elements );
+    }
+    
+    
+    protected void getElementsAnnotatedWith( 
+            java.util.Set<? extends TypeElement> annotations, 
+            RoundEnvironment roundEnv,
+            Predicate p )
+    {
+        if( annotations == null ) {
+            throw new IllegalArgumentException( "parameter annotations is null!");
+        }
+        if( roundEnv == null ) {
+            throw new IllegalArgumentException( "parameter RoundEnvironment is null!");
+        }
+        if( p == null ) {
+            throw new IllegalArgumentException( "paraemeter Predicate is null!");
+        }
+        
+        for( TypeElement te : annotations ) {
+            
+            final java.util.Set<? extends Element> elems = 
+                    roundEnv.getElementsAnnotatedWith(te);
+            
+            if( !p.execute(te, elems) ) {
+                break;
+            }
+        }
+    }
     /**
      * 
      * @param location
