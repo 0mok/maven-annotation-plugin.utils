@@ -21,6 +21,7 @@
 
 <inceptionYear>2013</inceptionYear>
 <description>Utilities for java annotation processor implementation JSR-269</description>
+<url>https://code.google.com/p/maven-annotation-plugin/</url>
 
 <licenses>
     <license>
